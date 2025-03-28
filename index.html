@@ -3,17 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <title>Schach für 2 Spieler</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/1.0.0/chess.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/chessboard.js/1.0.0/chessboard.min.js"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chessboard.js/1.0.0/chessboard.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
   <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+    }
     #board {
       width: 400px;
       margin: 20px auto;
-    }
-    h1 {
-      text-align: center;
-      font-family: sans-serif;
     }
   </style>
 </head>
@@ -21,30 +19,31 @@
   <h1>Schach – 2 Spieler</h1>
   <div id="board"></div>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+  <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+
   <script>
+    const game = new Chess();
+
     const board = Chessboard('board', {
       draggable: true,
       position: 'start',
-      onDrop: handleMove
-    });
+      onDrop: function (source, target) {
+        const move = game.move({
+          from: source,
+          to: target,
+          promotion: 'q'
+        });
 
-    const game = new Chess();
+        if (move === null) return 'snapback';
 
-    function handleMove(source, target) {
-      const move = game.move({
-        from: source,
-        to: target,
-        promotion: 'q' // immer Dame bei Umwandlung
-      });
-
-      if (move === null) return 'snapback'; // ungültiger Zug
-
-      if (game.game_over()) {
-        setTimeout(() => {
-          alert("Spiel beendet!");
-        }, 10);
+        if (game.game_over()) {
+          setTimeout(() => {
+            alert("Spiel beendet!");
+          }, 100);
+        }
       }
-    }
+    });
   </script>
 </body>
 </html>
