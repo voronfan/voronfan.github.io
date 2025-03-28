@@ -2,33 +2,48 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
-  <title>Color Picker</title>
-  <script src="https://cdn.jsdelivr.net/npm/@jaames/iro@5"></script>
+  <title>Schach für 2 Spieler</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/1.0.0/chess.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chessboard.js/1.0.0/chessboard.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chessboard.js/1.0.0/chessboard.min.css">
+  <style>
+    #board {
+      width: 400px;
+      margin: 20px auto;
+    }
+    h1 {
+      text-align: center;
+      font-family: sans-serif;
+    }
+  </style>
 </head>
 <body>
-  <h1>Wähle eine Farbe</h1>
-  <div id="picker"></div>
-  <p>Ausgewählte Farbe: <span id="colorHex">#ffffff</span></p>
+  <h1>Schach – 2 Spieler</h1>
+  <div id="board"></div>
 
   <script>
-    // Initialisiere den Farbwähler
-    const colorPicker = new iro.ColorPicker("#picker", {
-      width: 280,
-      color: "#ffffff"
+    const board = Chessboard('board', {
+      draggable: true,
+      position: 'start',
+      onDrop: handleMove
     });
 
-    // Wenn sich die Farbe ändert, aktualisiere die Anzeige und speichere sie lokal
-    colorPicker.on('color:change', function(color) {
-      const hex = color.hexString;
-      document.getElementById("colorHex").textContent = hex;
-      localStorage.setItem("selectedColor", hex);
-    });
+    const game = new Chess();
 
-    // Beim Laden der Seite: gespeicherte Farbe verwenden (wenn vorhanden)
-    const savedColor = localStorage.getItem("selectedColor");
-    if (savedColor) {
-      colorPicker.color.hexString = savedColor;
-      document.getElementById("colorHex").textContent = savedColor;
+    function handleMove(source, target) {
+      const move = game.move({
+        from: source,
+        to: target,
+        promotion: 'q' // immer Dame bei Umwandlung
+      });
+
+      if (move === null) return 'snapback'; // ungültiger Zug
+
+      if (game.game_over()) {
+        setTimeout(() => {
+          alert("Spiel beendet!");
+        }, 10);
+      }
     }
   </script>
 </body>
