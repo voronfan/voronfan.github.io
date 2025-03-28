@@ -1,37 +1,7 @@
 <!DOCTYPE html>
-<html lang="de">
-<head>
-  <meta charset="UTF-8">
-  <title>Color Picker</title>
-  <script src="https://cdn.jsdelivr.net/npm/@jaames/iro@5"></script>
-</head>
+<html>
 <body>
-  <h1>Wähle eine Farbe</h1>
-  <div id="picker"></div>
-  <p>Ausgewählte Farbe: <span id="colorHex">#ffffff</span></p>
-
-  <script>
-    // Initialisiere den Farbwähler
-    const colorPicker = new iro.ColorPicker("#picker", {
-      width: 280,
-      color: "#ffffff"
-    });
-
-    // Wenn sich die Farbe ändert, aktualisiere die Anzeige und speichere sie lokal
-    colorPicker.on('color:change', function(color) {
-      const hex = color.hexString;
-      document.getElementById("colorHex").textContent = hex;
-
-      // Speichern in localStorage (für einfaches Beispiel)
-      localStorage.setItem("selectedColor", hex);
-    });
-
-    // Beim Laden der Seite: gespeicherte Farbe verwenden (wenn vorhanden)
-    const savedColor = localStorage.getItem("selectedColor");
-    if (savedColor) {
-      colorPicker.color.hexString = savedColor;
-      document.getElementById("colorHex").textContent = savedColor;
-    }
-  </script>
+<h1>Hello World</h1>
+<p>Hallo</p>
 </body>
 </html>
