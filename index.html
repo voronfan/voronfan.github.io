@@ -2,48 +2,100 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
-  <title>Schach für 2 Spieler</title>
-  <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
+  <title>Schach – Drag & Drop</title>
   <style>
-    body {
-      font-family: sans-serif;
-      text-align: center;
+    body { font-family: sans-serif; text-align: center; }
+    #board { display: grid; grid-template-columns: repeat(8, 60px); width: 480px; margin: 20px auto; }
+    .cell {
+      width: 60px; height: 60px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 36px; user-select: none;
     }
-    #board {
-      width: 400px;
-      margin: 20px auto;
-    }
+    .white { background: #f0d9b5; }
+    .black { background: #b58863; }
   </style>
 </head>
 <body>
-  <h1>Schach – 2 Spieler</h1>
+  <h1>Schach – Drag & Drop</h1>
   <div id="board"></div>
-
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
-  <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+  <p id="status">Weiß ist am Zug</p>
 
   <script>
-    const game = new Chess();
+    const boardDiv = document.getElementById("board");
+    const status = document.getElementById("status");
+    let turn = "w";
 
-    const board = Chessboard('board', {
-      draggable: true,
-      position: 'start',
-      onDrop: function (source, target) {
-        const move = game.move({
-          from: source,
-          to: target,
-          promotion: 'q'
-        });
+    const pieces = {
+      r: "♜", n: "♞", b: "♝", q: "♛", k: "♚", p: "♟",
+      R: "♖", N: "♘", B: "♗", Q: "♕", K: "♔", P: "♙"
+    };
 
-        if (move === null) return 'snapback';
+    let board = [
+      ["r","n","b","q","k","b","n","r"],
+      ["p","p","p","p","p","p","p","p"],
+      ["","","","","","","",""],
+      ["","","","","","","",""],
+      ["","","","","","","",""],
+      ["","","","","","","",""],
+      ["P","P","P","P","P","P","P","P"],
+      ["R","N","B","Q","K","B","N","R"]
+    ];
 
-        if (game.game_over()) {
-          setTimeout(() => {
-            alert("Spiel beendet!");
-          }, 100);
+    function drawBoard() {
+      boardDiv.innerHTML = "";
+      for (let y = 0; y < 8; y++) {
+        for (let x = 0; x < 8; x++) {
+          const cell = document.createElement("div");
+          cell.classList.add("cell");
+          cell.classList.add((x + y) % 2 === 0 ? "white" : "black");
+          cell.dataset.x = x;
+          cell.dataset.y = y;
+
+          const piece = board[y][x];
+          if (piece) {
+            cell.textContent = pieces[piece];
+            cell.draggable = true;
+
+            cell.addEventListener("dragstart", (e) => {
+              e.dataTransfer.setData("text/plain", `${x},${y}`);
+            });
+          }
+
+          cell.addEventListener("dragover", (e) => e.preventDefault());
+
+          cell.addEventListener("drop", (e) => {
+            e.preventDefault();
+            const from = e.dataTransfer.getData("text/plain").split(",").map(Number);
+            const to = [x, y];
+            movePiece(from, to);
+          });
+
+          boardDiv.appendChild(cell);
         }
       }
-    });
+    }
+
+    function movePiece(from, to) {
+      const [fx, fy] = from;
+      const [tx, ty] = to;
+      const piece = board[fy][fx];
+
+      if (!piece) return;
+
+      const isWhite = piece === piece.toUpperCase();
+      if ((turn === "w" && !isWhite) || (turn === "b" && isWhite)) {
+        alert("Falscher Spieler ist am Zug!");
+        return;
+      }
+
+      board[ty][tx] = piece;
+      board[fy][fx] = "";
+      turn = turn === "w" ? "b" : "w";
+      status.textContent = (turn === "w" ? "Weiß" : "Schwarz") + " ist am Zug";
+      drawBoard();
+    }
+
+    drawBoard();
   </script>
 </body>
 </html>
